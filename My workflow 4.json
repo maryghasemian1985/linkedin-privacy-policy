@@ -185,7 +185,7 @@
     },
     {
       "parameters": {
-        "functionCode": "const resumeUrl = $node[\"Approval Wait\"].json[\"resumeUrl\"];"
+        "functionCode": "const item = items[0];\nconst resumeUrl = $node[\"Approval Wait\"].json[\"resumeUrl\"];\nconst preview = item.json.previewText;\nreturn [{\n  json: {\n    previewText: preview,\n    resumeWebhookUrl: resumeUrl,\n    approveUrl: `${resumeUrl}?action=approve`,\n    rejectUrl: `${resumeUrl}?action=reject`\n  }\n}];"
       },
       "id": "0667eb06-d53d-4cf2-9297-1eb89bc1ab8e",
       "name": "Build Approve/Reject Links",
@@ -199,8 +199,10 @@
     {
       "parameters": {
         "chatId": "293971286",
-        "text": "={{ $resumeWebhookUrl}}",
-        "additionalFields": {}
+        "text": "={{$json.previewText + \"\\n\\n[Approve](\" + $json.approveUrl + \") | [Reject](\" + $json.rejectUrl + \")\"}}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
       },
       "id": "508c9f3e-088d-42cd-a7db-b8a80f7d0dd2",
       "name": "Send Preview to Telegram",
@@ -427,14 +429,11 @@
             "node": "Build Approve/Reject Links",
             "type": "main",
             "index": 0
-          },
+          }
+        ],
+        [
           {
             "node": "Approved?",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Send Preview to Telegram",
             "type": "main",
             "index": 0
           }
@@ -443,7 +442,13 @@
     },
     "Build Approve/Reject Links": {
       "main": [
-        []
+        [
+          {
+            "node": "Send Preview to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Approved?": {
@@ -487,15 +492,7 @@
       ]
     },
     "Send Preview to Telegram": {
-      "main": [
-        [
-          {
-            "node": "Build Approve/Reject Links",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     }
   },
   "active": false,
