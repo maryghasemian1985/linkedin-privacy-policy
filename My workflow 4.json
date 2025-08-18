@@ -1,0 +1,512 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "de2e502b-ede9-43d1-89d2-583364b30e6b",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a Content Researcher Assistant specialized in the logistics, shipping, and international freight forwarding industry. \nYour role is to automatically research, select, and create professional LinkedIn posts for me (Marketing Manager at Arta Tarabar Group). \n\nYour tasks:\n1. Research: Regularly scan the latest industry news, trends, reports, and insights related to logistics, international shipping, multimodal transport, supply chain disruptions, Afghanistan/Pakistan/CIS trade, and global freight. \n2. Selection: Identify the most relevant and impactful topic that positions me as a thought leader in cross-border logistics. Prioritize content that resonates with logistics managers, freight forwarders, exporters/importers, and supply chain decision-makers. \n3. Writing: Create a polished LinkedIn post that is:\n   - Professional, authoritative, and direct.\n   - Maximum 4 short paragraphs (concise, engaging).\n   - Includes a strong opening hook (fact, trend, or bold statement).\n   - Explains the context and why it matters.\n   - Subtly connects the insight to my expertise and the role of Arta Tarabar Group.\n   - Ends with a thought-provoking takeaway or call-to-action.\n4. Style:\n   - Tone: Smart, confident, approachable, no fluff.\n   - Use simple but strong English (avoid empty buzzwords).\n   - Highlight trust, expertise, and regional knowledge (Afghanistan, Pakistan, CIS, Russia, Dubai, Bandar Abbas).\n5. Output: Deliver a ready-to-publish LinkedIn post + suggest 5 relevant hashtags.\n\nBrand context:\n- Company: Arta Tarabar Group (includes Arta Cargo Dubai, Arta Tarabar Mashhad/Bandar Abbas, and Arta Tarabar Daryaye Abi shipping line).\n- Services: International freight forwarding, multimodal transport, customs clearance, sea–land corridors, LCL/FCL, project cargo, door-to-door in Afghanistan & Pakistan with company-owned assets.\n- Expansion: New markets in Russia & CIS.\n- Brand values: Reliable, cost-effective, specialized in challenging regions, bilingual support, end-to-end logistics solutions.\n\nYour goal:\nMake me stand out on LinkedIn as a trusted logistics professional and industry thought leader, while indirectly attracting potential customers and partners.\n\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a helpful assistant\n#image description\nwrite a related profational prompt for this topic generating image ai dall-e-3 for use in linkdin"
+        }
+      },
+      "id": "db3476cb-5d02-496f-a380-d94ccfb2103a",
+      "name": "Content topic generator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "76c5e1ca-f35b-4001-af43-3095c6e7b7ac",
+      "name": "OpenAI Chat Model (topic)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -896,
+        464
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "LQwSRS7JmbyQr438",
+          "name": "api.avalai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[{\"title\":\"AI ...\",\"rationale\":\"...\",\"hook\":\"...\" , \"image description\":\"...\"}]"
+      },
+      "id": "62744140-4ef7-4543-b4e0-dd5a0f70641c",
+      "name": "Structured Output Parser (topic)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a linkedin content creator ...",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "859166a4-801c-4e07-922c-81257fb6744e",
+      "name": "Content creator",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -208,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "31d9e449-2328-4d82-ac03-fa70571c2a6d",
+      "name": "OpenAI Chat Model (content)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        640
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "LQwSRS7JmbyQr438",
+          "name": "api.avalai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"post title\":\"...\",\"post content\":\"...\",\"image description\":\"...\"}"
+      },
+      "id": "20c06423-c7fa-4ae8-a6dd-4f050cddfae8",
+      "name": "Structured Output Parser (content)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const item = items[0];\nconst data = item.json?.data?.[0] || {};\nconst b64 = data.b64_json;\nconst url = data.url;\nitem.binary = item.binary || {};\nif (b64) {\n  const buffer = Buffer.from(b64, 'base64');\n  const bin = await this.helpers.prepareBinaryData(buffer, 'image.png');\n  item.binary.image = bin;\n  item.json.hasImage = true;\n  return items;\n}\nif (url) {\n  item.json.image_url = url;\n  item.json.hasImage = false;\n}\nreturn items;"
+      },
+      "id": "8a1c2486-dd07-45e5-96ad-bab21cf8326c",
+      "name": "Base64 → Binary",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -96
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "91a615ac-5855-4ceb-ace2-42e680f94af2",
+      "name": "Merge content+image",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const p = items[0].json;\nconst title = p[\"post title\"] || \"Post title\";\nconst content = p[\"post content\"] || \"...\";\nconst hashtags = Array.isArray(p[\"Hashtags\"]) ? p[\"Hashtags\"].join(' ') : (p[\"Hashtags\"] || '');\nreturn [{ json: { previewText: `*${title}*\\n\\n${content}\\n\\n${hashtags}` } }];\n"
+      },
+      "id": "aaf8fa83-8338-4d19-93c8-adb23861740e",
+      "name": "Preview Composer",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        576,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "id": "af0504ff-c2d4-490d-bc3f-01e1763a35e8",
+      "name": "Approval Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        960,
+        224
+      ],
+      "webhookId": "180afa0c-876e-440b-972e-14a282d5e5a7"
+    },
+    {
+      "parameters": {
+        "functionCode": "const resumeUrl = $node[\"Approval Wait\"].json[\"resumeUrl\"];"
+      },
+      "id": "0667eb06-d53d-4cf2-9297-1eb89bc1ab8e",
+      "name": "Build Approve/Reject Links",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        736,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "293971286",
+        "text": "={{ $resumeWebhookUrl}}",
+        "additionalFields": {}
+      },
+      "id": "508c9f3e-088d-42cd-a7db-b8a80f7d0dd2",
+      "name": "Send Preview to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        992,
+        576
+      ],
+      "webhookId": "83ec1345-b660-439d-bb71-be2784edd693",
+      "credentials": {
+        "telegramApi": {
+          "id": "RfoKKFbCLllfVVMg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.query.action}}",
+              "operation": "equals",
+              "value2": "approve"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a8c170e2-73c5-4878-9095-a8c8b0a2a2e1",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "postAs": "organization",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "image",
+        "additionalFields": {}
+      },
+      "id": "f8c42aa8-9304-4cb4-98e9-5d0d8861abab",
+      "name": "Create a post (LinkedIn)",
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        192
+      ],
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "a7nB6gYOQ0RGGYgK",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "bd19fc3b-0d08-42f5-9a2c-cd5df95311de",
+      "name": "End (Rejected)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        64
+      ],
+      "id": "259e3364-3025-4fe5-92c8-93c70c5147cd",
+      "name": "Wait",
+      "webhookId": "19700b6a-d08e-4ea6-8e54-cd20b893b14c"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.output[0]['image description'] }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -176,
+        -176
+      ],
+      "id": "3c70f5c4-c4ca-4347-88fe-50b8af0c409c",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rcyg4d5694Slm8Qo",
+          "name": "dalle3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model (topic)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content topic generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser (topic)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content topic generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content topic generator": {
+      "main": [
+        [
+          {
+            "node": "Content creator",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (content)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser (content)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content creator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content creator": {
+      "main": [
+        [
+          {
+            "node": "Merge content+image",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Base64 → Binary": {
+      "main": [
+        [
+          {
+            "node": "Merge content+image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge content+image": {
+      "main": [
+        [
+          {
+            "node": "Preview Composer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preview Composer": {
+      "main": [
+        [
+          {
+            "node": "Approval Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Wait": {
+      "main": [
+        [
+          {
+            "node": "Build Approve/Reject Links",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Preview to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Approve/Reject Links": {
+      "main": [
+        []
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Create a post (LinkedIn)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "End (Rejected)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Base64 → Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Preview to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Build Approve/Reject Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "808b1d98-dfcd-413f-977f-aff94003894c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9e169cecf15a2925ff41adb55cf762fceb08e1cfb2007825f56322023a39eccc"
+  },
+  "id": "ZN5v3Gug57FdB6EU",
+  "tags": []
+}
